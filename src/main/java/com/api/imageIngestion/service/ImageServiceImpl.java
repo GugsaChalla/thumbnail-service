@@ -2,6 +2,7 @@ package com.api.imageIngestion.service;
 
 import com.api.imageIngestion.dto.ImageCreateRequestDTO;
 import com.api.imageIngestion.dto.ImageSetCreateRequestDTO;
+import com.api.imageIngestion.dto.ImageSetMetadataResponseDTO;
 import com.api.imageIngestion.dto.ImageSetResponseDTO;
 import com.api.imageIngestion.entity.Image;
 import com.api.imageIngestion.entity.ImageSet;
@@ -108,6 +109,16 @@ public class ImageServiceImpl implements ImageService {
         ImageSet set = imageSetRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ImageSet not found: " + id));
         return mapper.toResponseDTO(set);
+    }
+
+    @Override
+    /**
+     * Fetch ImageSet by ID with metadata only (no thumbnail bytes) for lightweight queries
+     */
+    public ImageSetMetadataResponseDTO getImageSetMetadata(Long id) {
+        ImageSet set = imageSetRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ImageSet not found: " + id));
+        return mapper.toImageSetMetadataResponseDTO(set);
     }
 
     /**

@@ -113,4 +113,51 @@ public class ImageSetMapper {
                 .aspectRatio(aspectRatio)
                 .build();
     }
+
+    /**
+     * Convert ImageSet entity to ImageSetMetadataResponseDTO (without thumbnail bytes for performance)
+     */
+    public ImageSetMetadataResponseDTO toImageSetMetadataResponseDTO(ImageSet imageSet) {
+        if (imageSet == null) {
+            return null;
+        }
+
+        List<ImageMetadataDTO> imageDTOs = imageSet.getImages() != null
+                ? imageSet.getImages().stream()
+                .map(this::toImageMetadataDTO)
+                .collect(Collectors.toList())
+                : null;
+
+        return ImageSetMetadataResponseDTO.builder()
+                .imageSetId(imageSet.getSetId())
+                .imageSetName(imageSet.getSetName())
+                .createdAt(imageSet.getCreatedAt())
+                .images(imageDTOs)
+                .build();
+    }
+
+    /**
+     * Convert Image entity to ImageMetadataDTO (metadata only, no thumbnail bytes)
+     */
+    public ImageMetadataDTO toImageMetadataDTO(Image image) {
+        if (image == null) {
+            return null;
+        }
+
+        DimensionsDTO dimensionsDTO = null;
+        if (image.getWidth() != null || image.getHeight() != null || image.getAspectRatio() != null) {
+            dimensionsDTO = DimensionsDTO.builder()
+                    .width(image.getWidth())
+                    .height(image.getHeight())
+                    .aspectRatio(image.getAspectRatio())
+                    .build();
+        }
+
+        return ImageMetadataDTO.builder()
+                .imgId(image.getImgId())
+                .imgName(image.getImgName())
+                .timestamp(image.getTimestamp())
+                .dimensions(dimensionsDTO)
+                .build();
+    }
 }
